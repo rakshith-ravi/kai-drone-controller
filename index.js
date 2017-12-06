@@ -15,8 +15,10 @@ async function connect() {
 		console.log("0 inputs found");
 		return;
 	}
+	console.log(result[0].comName);
 	
 	serialport = new SerialPort(result[0].comName, {
+		autoOpen: false,
 		baudRate: 115200
 	});
 	serialport.on('data', dataRecieved);
