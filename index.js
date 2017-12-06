@@ -1,5 +1,11 @@
 var SerialPort = require('serialport');
+var readline = require('readline');
 var exec = require('child_process').exec;
+
+var reader = readline.createInterface({
+	input: process.stdin,
+	output: process.stdout
+});
 
 async function connect() {
 	var result = await SerialPort.list();
@@ -15,14 +21,16 @@ async function connect() {
 		console.log("0 inputs found");
 		return;
 	}
-	console.log(result[0].comName);
-	
-	serialport = new SerialPort(result[0].comName, {
-		autoOpen: false,
-		baudRate: 115200
+	console.log("Found connections: " + JSON.stringify(result));
+
+	reader.question("Enter full COM port ('Eg: COM1'", answer => {
+		serialport = new SerialPort(answer, {
+			autoOpen: false,
+			baudRate: 115200
+		});
+		serialport.on('data', dataRecieved);
+		serialport.open();
 	});
-	serialport.on('data', dataRecieved);
-	serialport.open();
 }
 
 function dataRecieved(input) {
